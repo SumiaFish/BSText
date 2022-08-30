@@ -1587,3 +1587,23 @@ open class BSLabel: UIView, TextDebugTarget, TextAsyncLayerDelegate, NSSecureCod
         return task
     }
 }
+
+extension BSLabel {
+    
+    /** 暗黑模式补丁：仅支持 ios13以上 */
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if #available(iOS 13.0, *) {
+            if UITraitCollection.current.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+                innerText.enumerateAttributes(in: NSRange(location: 0, length: innerText.length), options: .longestEffectiveRangeNotRequired) { value, range, stop in
+                    innerText.removeAttribute(NSAttributedString.Key.foregroundColor, range: range)
+                }
+                layer.setNeedsDisplay()
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+    }
+    
+}
